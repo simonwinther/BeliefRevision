@@ -2,11 +2,11 @@ package com.beliefrevision;
 
 import java.util.ArrayList;
 
-public class Clauses {
+public class Clause {
     String clause;
     ArrayList<Literal> literals = new ArrayList<Literal>();
 
-    public Clauses(String literal) {
+    public Clause(String literal) {
         this.clause = literal;
         parseLiteral();
     }

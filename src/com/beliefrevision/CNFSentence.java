@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class CNFSentence {
 
-    ArrayList<Clauses> clauses = new ArrayList<Clauses>();
+    ArrayList<Clause> clauses = new ArrayList<Clause>();
     String cnfSentence;
 
     public CNFSentence(String cnfSentence) {
@@ -16,7 +16,7 @@ public class CNFSentence {
         String[] arrOfStr = cnfSentence.split("[&]+");
 
         for (String a : arrOfStr) {
-            Clauses clause = new Clauses(a);
+            Clause clause = new Clause(a);
             clauses.add(clause);
             System.out.println("Clause: " + a);
         }
