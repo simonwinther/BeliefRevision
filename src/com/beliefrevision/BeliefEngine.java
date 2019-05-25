@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class BeliefEngine {
     ArrayList<Object> beliefBase = new ArrayList<>();
     CNFSentence cnf;
