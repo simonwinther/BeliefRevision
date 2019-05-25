@@ -1,29 +1,47 @@
 package com.beliefrevision;
 
 import java.util.Scanner;
-
-import com.oracle.xmlns.internal.webservices.jaxws_databinding.ExistingAnnotationsType;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
+
+	static Util util = new Util();
 
     public static void main(String[] args) {
     	menu();
     }
-    
+
     public static void menu() {
     	@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);
-   	
+
+		while(true) {
+			Pattern pattern = Pattern.compile("([!]?[a-zA-Z](\\s?[|]\\s?([!]?[a-zA-Z]))+)|(([!]?[a-zA-Z]\\s?)|([(]([!]?[a-zA-Z](\\s?[|]\\s?[!]?[a-zA-Z])+)[)]\\s?))([&]\\s?(([!]?[a-zA-Z]\\s?)|([(]([!]?[a-zA-Z](\\s?[|]\\s?[!]?[a-zA-Z])+)[)]\\s?)))*");
+			String test = in.nextLine();
+			Matcher matcher = pattern.matcher(test);
+			if (matcher.matches()) {
+				System.out.println("It matches!");
+			} else {
+				System.out.println("It doesn't match..");
+			}
+		}
+   	/*
     	for(;;) {
 	    	System.out.println("1. Add to belief base");
 	    	System.out.println("2. Check formula for consistency");
 	    	System.out.println("3. Show belief base");
 	    	System.out.println("4. Quit");
-	    	
+
+
+
+
 	    	//Read input for choice
 	    	int choice = in.nextInt();
-	    	in.nextLine();	
-	    	
+	    	in.nextLine();
+
+
+
 	    	switch (choice) {
 			case 1:
 				
@@ -46,5 +64,6 @@ public class Main {
 				break;
 			}
     	}
+    */
     }
 }
