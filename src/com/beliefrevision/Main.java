@@ -13,20 +13,12 @@ public class Main {
     }
 
     public static void menu() {
+
+        BeliefEngine be = new BeliefEngine();
+
     	@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);
 
-		while(true) {
-			Pattern pattern = Pattern.compile("([!]?[a-zA-Z](\\s?[|]\\s?([!]?[a-zA-Z]))+)|(([!]?[a-zA-Z]\\s?)|([(]([!]?[a-zA-Z](\\s?[|]\\s?[!]?[a-zA-Z])+)[)]\\s?))([&]\\s?(([!]?[a-zA-Z]\\s?)|([(]([!]?[a-zA-Z](\\s?[|]\\s?[!]?[a-zA-Z])+)[)]\\s?)))*");
-			String test = in.nextLine();
-			Matcher matcher = pattern.matcher(test);
-			if (matcher.matches()) {
-				System.out.println("It matches!");
-			} else {
-				System.out.println("It doesn't match..");
-			}
-		}
-   	/*
     	for(;;) {
 	    	System.out.println("1. Add to belief base");
 	    	System.out.println("2. Check formula for consistency");
@@ -44,7 +36,7 @@ public class Main {
 
 	    	switch (choice) {
 			case 1:
-				
+				be.addToBeliefBase("something from michael");
 				break;
 				
 			case 2:
@@ -59,11 +51,10 @@ public class Main {
 				System.out.println("Belief engine shutdown");
 				System.exit(0);
 				break;
-	
+
 			default:
 				break;
 			}
     	}
-    */
     }
 }
