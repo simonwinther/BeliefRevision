@@ -1,18 +1,21 @@
 package com.beliefrevision;
 
 import java.util.Scanner;
-
-import com.oracle.xmlns.internal.webservices.jaxws_databinding.ExistingAnnotationsType;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
+
+
 
     public static void main(String[] args) {
     	menu();
     }
-    
+
     public static void menu() {
 
         BeliefEngine be = new BeliefEngine();
+        Util util = new Util();
 
     	@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);
@@ -22,14 +25,14 @@ public class Main {
 	    	System.out.println("2. Check formula for consistency");
 	    	System.out.println("3. Show belief base");
 	    	System.out.println("4. Quit");
-	    	
+
 	    	//Read input for choice
 	    	int choice = in.nextInt();
-	    	in.nextLine();	
-	    	
+	    	in.nextLine();
+
 	    	switch (choice) {
 			case 1:
-				be.addToBeliefBase("something from michael");
+				be.addToBeliefBase(util.getRandomLine());
 				break;
 				
 			case 2:
