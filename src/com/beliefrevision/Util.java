@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Random;
 
 public class Util {
-    private static List<String> cnfSentences = new ArrayList<>();
-    private static int counter = 0;
+    private List<String> cnfSentences = new ArrayList<>();
+    private int counter = 0;
 
     Util() {
 
@@ -24,14 +24,13 @@ public class Util {
         }
     }
 
-    public static String getRandomLine(){
+    public String getRandomLine(){
         Random rand = new Random();
 
         return cnfSentences.get(rand.nextInt(cnfSentences.size()));
     }
 
-    public static String getNextLine() {
-
+    public String getNextLine() {
         counter++;
         String tmp = cnfSentences.get(counter);
 

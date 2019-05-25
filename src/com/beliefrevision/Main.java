@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class Main {
 
-	static Util util = new Util();
+
 
     public static void main(String[] args) {
     	menu();
@@ -15,39 +15,24 @@ public class Main {
     public static void menu() {
 
         BeliefEngine be = new BeliefEngine();
+        Util util = new Util();
 
     	@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);
 
-		while(true) {
-			Pattern pattern = Pattern.compile("([!]?[a-zA-Z](\\s?[|]\\s?([!]?[a-zA-Z]))+)|(([!]?[a-zA-Z]\\s?)|([(]([!]?[a-zA-Z](\\s?[|]\\s?[!]?[a-zA-Z])+)[)]\\s?))([&]\\s?(([!]?[a-zA-Z]\\s?)|([(]([!]?[a-zA-Z](\\s?[|]\\s?[!]?[a-zA-Z])+)[)]\\s?)))*");
-			String test = in.nextLine();
-			Matcher matcher = pattern.matcher(test);
-			if (matcher.matches()) {
-				System.out.println("It matches!");
-			} else {
-				System.out.println("It doesn't match..");
-			}
-		}
-   	/*
     	for(;;) {
 	    	System.out.println("1. Add to belief base");
 	    	System.out.println("2. Check formula for consistency");
 	    	System.out.println("3. Show belief base");
 	    	System.out.println("4. Quit");
 
-
-
-
 	    	//Read input for choice
 	    	int choice = in.nextInt();
 	    	in.nextLine();
 
-
-
 	    	switch (choice) {
 			case 1:
-				be.addToBeliefBase("something from michael");
+				be.addToBeliefBase(util.getRandomLine());
 				break;
 				
 			case 2:
@@ -67,6 +52,5 @@ public class Main {
 				break;
 			}
     	}
-    */
     }
 }
