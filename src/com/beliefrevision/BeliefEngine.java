@@ -1,7 +1,6 @@
 package com.beliefrevision;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,36 +27,46 @@ public class BeliefEngine {
         return matcher.matches();
     }
 
-    public String negateThesis(){
-        String test = "(A|!B)&C";
-        StringBuilder tmp = new StringBuilder(test);
-        ArrayList<String> clauses = new ArrayList<>();
-        ArrayList<String> newClauses = new ArrayList<>();
-        String negClause;
-        String DeMorgans = "";
+    public String negateThesis(String sentence){
+        String test = "(A|!B)&(!C|D)";
+
         String moreDeMorgans = "";
+        String negatedThesis = "";
 
         /*
-        !((A|!B)&C)
-        !(A|!B)|!C
-        (!A&B)|!C
-        (!A|!C)&(B|!C)
+        !((A|!B)&!C)
+        !(A|!B)|C
+        (!A&B)|C
+        (!A|C)&(B|C)
          */
 
         if(isCNF(test)){
 
             //Negate
+            StringBuilder tmp = new StringBuilder(test);
             tmp.insert(0,"!(");
             tmp.insert(tmp.length(),")");
 
             //DeMorgans
-            String[] split = test.split("&");
+            moreDeMorgans = DeMorgan(test);
 
-            for (String s : split){
-                StringBuilder tmpSplit = new StringBuilder(s);
-                //tmpSplit.insert(0,"!"); //for DeMorgans string
-                clauses.add(tmpSplit.toString());
-            }
+            // distribution
+            negatedThesis = distribution(moreDeMorgans);
+        }
+        return negatedThesis;
+    }
+
+    private String DeMorgan(String test) {
+        ArrayList<String> clauses = new ArrayList<>();
+        String negClause;
+        String moreDeMorgans = "";
+
+        String[] split = test.split("&");
+
+        for (String s : split){
+            //tmpSplit.insert(0,"!"); //for DeMorgans string (needs tmpSplit to be a StringBuilder
+            clauses.add(s);
+        }
 
             /*
             for (String clause : clauses) {
@@ -66,76 +75,61 @@ public class BeliefEngine {
             DeMorgans = DeMorgans.substring(0, DeMorgans.length() - 1);
             */
 
-            //More DeMorgans and double negation
-            for (String clause : clauses) {
-                if (clause.charAt(0) != '(') {
-                    if(clause.charAt(0) == '!') {
-                        moreDeMorgans = moreDeMorgans.concat(clause.substring(1)).concat("|");
-                    } else {
-                        StringBuilder tmpSplit = new StringBuilder(clause);
-                        tmpSplit.insert(0, "!");
-                        moreDeMorgans = moreDeMorgans.concat(tmpSplit.toString()).concat("|");
-                    }
+        //More DeMorgans and double negation
+        for (String clause : clauses) {
+            if (clause.charAt(0) != '(') {
+                if(clause.charAt(0) == '!') {
+                    moreDeMorgans = moreDeMorgans.concat(clause.substring(1)).concat("|");
                 } else {
-                    negClause = clause.replaceAll("\\|", "&!");
-                    negClause = negClause.replaceAll("\\(", "(!");
-                    negClause = negClause.replaceAll("!!", "");
-                    moreDeMorgans = moreDeMorgans.concat(negClause).concat("|");
+                    StringBuilder tmpSplit = new StringBuilder(clause);
+                    tmpSplit.insert(0, "!");
+                    moreDeMorgans = moreDeMorgans.concat(tmpSplit.toString()).concat("|");
                 }
-            }
-            moreDeMorgans = moreDeMorgans.substring(0, moreDeMorgans.length() - 1);
-
-            // distribution
-
-            clauses.clear();
-            String[] split1 = moreDeMorgans.split("\\|");
-            String[] split2;
-            String[] split3;
-            String tmpS;
-            //System.out.println(split1.length);
-            for (String s : split1) {
-                tmpS = s.replaceAll("\\(", "");
-                tmpS = tmpS.replaceAll("\\)", "");
-                clauses.add(tmpS);
-            }
-
-            for (int i = 0; i < clauses.size(); i++) {
-                split2 = clauses.get(i).split("&");
-                for (int j = 1; j < clauses.size(); j++) {
-                    split3 = clauses.get(i).split("&");
-                    for (int o = 0; o < split2.length; o++) {
-                        for (int u = 0; u < split2.length; u++) {
-                            newClauses.add(split2[o].concat("|").concat(split3[u]));
-                        }
-                    }
-                }
-            }
-            newClauses = removeDuplicates(newClauses);
-            for (String s : newClauses) {
-                System.out.println(s);
+            } else {
+                negClause = clause.replaceAll("\\|", "&!");
+                negClause = negClause.replaceAll("\\(", "(!");
+                negClause = negClause.replaceAll("!!", "");
+                moreDeMorgans = moreDeMorgans.concat(negClause).concat("|");
             }
         }
+        moreDeMorgans = moreDeMorgans.substring(0, moreDeMorgans.length() - 1);
+
         return moreDeMorgans;
     }
 
-    public static <String> ArrayList<String> removeDuplicates(ArrayList<String> list)
-    {
+    private String distribution(String moreDeMorgans) {
+        ArrayList<String> clauses = new ArrayList<>();
+        String[] split1 = moreDeMorgans.split("\\|");
+        String tmpS;
+        for (String s : split1) {
+            tmpS = s.replaceAll("\\(", "");
+            tmpS = tmpS.replaceAll("\\)", "");
+            clauses.add(tmpS);
+        }
 
-        // Create a new ArrayList
-        ArrayList<String> newList = new ArrayList<String>();
+        String[][] split = new String[5][5];
+        for (String clause : clauses) {
+            split[clauses.indexOf(clause)] = clause.split("&");
+        }
 
-        // Traverse through the first list
-        for (String element : list) {
 
-            // If this element is not present in newList
-            // then add it
-            if (!newList.contains(element)) {
-
-                newList.add(element);
+        ArrayList<String> newClauses = new ArrayList<>();
+        for(int i = 0; i < split.length-1; i++) {
+            for(int j = 0; j < split[i].length; j++){
+                for(int o = 0; o < split[i+1].length; o++) {
+                    if (split[i][j] != null && split[i+1][o] != null) {
+                        //System.out.println("Value of split[" + i + "][" + j + "] = " + split[i][j]);
+                        System.out.println(split[i][j].concat("|").concat(split[i+1][o]));
+                        newClauses.add(split[i][j].concat("|").concat(split[i+1][o]));
+                    }
+                }
             }
         }
 
-        // return the new list
-        return newList;
+        //TODO: set up the new clauses correctly and add symbols
+
+        String negatedThesis = "";
+
+        return negatedThesis;
     }
 }
