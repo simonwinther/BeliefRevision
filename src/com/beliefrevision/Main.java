@@ -40,7 +40,7 @@ public class Main {
 				break;
 				
 			case 3:
-				
+				be.printBeliefBase();
 				break;
 	
 			case 4:

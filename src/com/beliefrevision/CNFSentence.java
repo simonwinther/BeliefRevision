@@ -22,4 +22,8 @@ public class CNFSentence {
             System.out.println("Clause: " + a);
         }
     }
+    
+    public String getCNFSentence() {
+    	return cnfSentence;
+    }
 }
