@@ -36,9 +36,10 @@ public class Main {
 				break;
 				
 			case 2:
-				
+				Clause tmp1 = new Clause("p|s|q");
+				Clause tmp2 = new Clause("!p");
+				be.PLResolve(tmp1, tmp2);
 				break;
-				
 			case 3:
 				
 				break;
