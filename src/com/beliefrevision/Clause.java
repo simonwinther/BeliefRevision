@@ -6,6 +6,13 @@ public class Clause {
     String clause;
     ArrayList<Literal> literals = new ArrayList<Literal>();
 
+    public Clause (Clause c){
+        this.clause = c.clause;
+        for (Literal l: c.literals) {
+            this.literals.add(new Literal(l));
+        }
+    }
+
     public Clause(String literal) {
         this.clause = literal;
         parseLiteral();
