@@ -17,6 +17,7 @@ public class Main {
         BeliefEngine be = new BeliefEngine();
         Util util = new Util();
 
+        System.out.println(be.negateThesis(new CNFSentence("(!A|B)&(C|!D)")).cnfSentence);
 
     	@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);

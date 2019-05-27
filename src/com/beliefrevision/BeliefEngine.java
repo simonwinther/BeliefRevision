@@ -234,25 +234,22 @@ public class BeliefEngine {
     }
 
     private String DeMorgan(CNFSentence sentence) {
-        String negClause;
         String DNFForm= "";
+        String DNFClause;
 
         //DeMorgans and double negation
         for (Clause clause : sentence.clauses) {
-            if (clause.clause.charAt(0) != '(') {
-                if(clause.clause.charAt(0) == '!') {
-                    DNFForm = DNFForm.concat(clause.clause.substring(1)).concat("|");
+            DNFClause = "";
+            DNFClause = DNFClause.concat("(");
+            for (Literal l : clause.literals) {
+                if (l.symbol.charAt(0) == '!') {
+                    DNFClause = DNFClause.concat(Character.toString(l.symbol.charAt(1))).concat("&");
                 } else {
-                    StringBuilder tmpSplit = new StringBuilder(clause.clause);
-                    tmpSplit.insert(0, "!");
-                    DNFForm = DNFForm.concat(tmpSplit.toString()).concat("|");
+                    DNFClause = DNFClause.concat("!").concat(l.symbol).concat("&");
                 }
-            } else {
-                negClause = clause.clause.replaceAll("\\|", "&!");
-                negClause = negClause.replaceAll("\\(", "(!");
-                negClause = negClause.replaceAll("!!", "");
-                DNFForm = DNFForm.concat(negClause).concat("|");
             }
+            DNFClause = DNFClause.substring(0, DNFClause.length() - 1);
+            DNFForm = DNFForm.concat(DNFClause).concat(")").concat("|");
         }
         DNFForm = DNFForm.substring(0, DNFForm.length() - 1);
 
