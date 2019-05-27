@@ -16,9 +16,14 @@ public class CNFSentence {
         String[] arrOfStr = cnfSentence.split("[&]+");
 
         for (String a : arrOfStr) {
+            a = a.replaceAll("[()]", "");
             Clause clause = new Clause(a);
             clauses.add(clause);
             System.out.println("Clause: " + a);
         }
+    }
+    
+    public String getCNFSentence() {
+    	return cnfSentence;
     }
 }
