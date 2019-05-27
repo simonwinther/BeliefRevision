@@ -23,7 +23,7 @@ public class BeliefEngine {
         }
 
     }
-    
+
     public void printBeliefBase() {
     	int beliefBaseLength = beliefBase.size();
     	int printCounter = 1;
@@ -46,43 +46,43 @@ public class BeliefEngine {
 		ArrayList<Clause> clauses = new ArrayList<Clause>();
 		ArrayList<Clause> _new = new ArrayList<Clause>();
 		ArrayList<Clause> resolvents = new ArrayList<Clause>();
-		
+
 		clauses.addAll(getClausesFromBB(beliefBase));
 		clauses.addAll(getClausesFromCNFSentence(negateThesis(alpha)));
-		
+
 		System.out.println("Negated heis: " + negateThesis(new CNFSentence("(!C|B)&A")).cnfSentence);
-		
+
 		//loop do
 		for(;;) {
-			
+
 			// for each pair of clauses ci, cj in clauses do
 			for (Clause ci: clauses) {
 				for (Clause cj: clauses) {
 					if (ci == cj) {
 						continue;
 					}
-					
+
 					// resolvents <- PL-Resolve(ci, cj)
 					// Add method: plResolve
 					resolvents.addAll(plResolve(ci, cj));
-					
+
 					// if resolvents contains the empty clause then return true
 					for (Clause tmp: resolvents) {
 						if (tmp.clause.isEmpty()) {
 							return true;
 						}
 					}
-					
+
 					// new <- new U resolvents
 					_new = unifyArrayLists(_new, resolvents);
 				}
 			}
-			
+
 			// if new is equivalent to clauses or clauses already has all existing clauses in new then return false
 			if(array1ContentMatchArray2(_new, clauses)) {
 				return false;
 			}
-			
+
 			// clauses <- clauses U new
 			clauses = unifyArrayLists(clauses, _new);
 		}
@@ -90,7 +90,7 @@ public class BeliefEngine {
 
 	private ArrayList<Clause> unifyArrayLists(ArrayList<Clause> arr1, ArrayList<Clause> arr2) {
 		boolean clauseExist = false;
-		
+
 		for (Clause tmp: arr2) {
 			for (Clause tmp2: arr1) {
 				if(tmp.clause.equals(tmp2.clause)) {
@@ -105,10 +105,10 @@ public class BeliefEngine {
 		}
 		return arr1;
 	}
-	
+
 	public boolean array1ContentMatchArray2(ArrayList<Clause> arr1, ArrayList<Clause> arr2) {
 	    ArrayList<Clause> work = new ArrayList<Clause>(arr2);
-	    
+
 	    // as long as elements from arr1 can be removed from arr2, arr2 must contain the same elements as arr1.
 	    for (Clause element : arr1) {
 	        if (!work.remove(element)) {
@@ -117,11 +117,11 @@ public class BeliefEngine {
 	    }
 	    return true;
 	}
-    
+
     public CNFSentence getNegatedSentence(CNFSentence cnf) {
     	return cnf;
     }
-    
+
     public ArrayList<Clause> getClausesFromCNFSentence(CNFSentence cnf){
     	ArrayList<Clause> clauses = new ArrayList<Clause>();
     		for(Clause tmp: cnf.getClauses()) {
@@ -129,7 +129,7 @@ public class BeliefEngine {
 			}
     	return clauses;
     }
-    
+
     public ArrayList<Clause> getClausesFromBB(ArrayList<Object> beliefBase){
     	ArrayList<Clause> clauses = new ArrayList<Clause>();
     	for(Object obj: beliefBase) {
@@ -142,7 +142,7 @@ public class BeliefEngine {
     	}
     	return clauses;
     }
-      
+
     public ArrayList<Clause> plResolve(Clause c1, Clause c2) {
         ArrayList<Clause> resArr = new ArrayList<>();
 
@@ -224,7 +224,7 @@ public class BeliefEngine {
         Matcher matcher = pattern.matcher(sentence);
         return matcher.matches();
     }
-  
+
     /**************************ONLY WORKS FOR 1 OR 2 CLAUSES WITH '&' IN BETWEEN********************************/
     public CNFSentence negateThesis(CNFSentence sentence){
         String DNFForm;
@@ -253,25 +253,22 @@ public class BeliefEngine {
     }
 
     private String DeMorgan(CNFSentence sentence) {
-        String negClause;
         String DNFForm= "";
+        String DNFClause;
 
         //DeMorgans and double negation
         for (Clause clause : sentence.clauses) {
-            if (clause.clause.charAt(0) != '(') {
-                if(clause.clause.charAt(0) == '!') {
-                    DNFForm = DNFForm.concat(clause.clause.substring(1)).concat("|");
+            DNFClause = "";
+            DNFClause = DNFClause.concat("(");
+            for (Literal l : clause.literals) {
+                if (l.symbol.charAt(0) == '!') {
+                    DNFClause = DNFClause.concat(Character.toString(l.symbol.charAt(1))).concat("&");
                 } else {
-                    StringBuilder tmpSplit = new StringBuilder(clause.clause);
-                    tmpSplit.insert(0, "!");
-                    DNFForm = DNFForm.concat(tmpSplit.toString()).concat("|");
+                    DNFClause = DNFClause.concat("!").concat(l.symbol).concat("&");
                 }
-            } else {
-                negClause = clause.clause.replaceAll("\\|", "&!");
-                negClause = negClause.replaceAll("\\(", "(!");
-                negClause = negClause.replaceAll("!!", "");
-                DNFForm = DNFForm.concat(negClause).concat("|");
             }
+            DNFClause = DNFClause.substring(0, DNFClause.length() - 1);
+            DNFForm = DNFForm.concat(DNFClause).concat(")").concat("|");
         }
         DNFForm = DNFForm.substring(0, DNFForm.length() - 1);
 
@@ -288,29 +285,55 @@ public class BeliefEngine {
             clauses.add(tmpS);
         }
 
-        String[][] split = new String[MAX_CLAUSES][MAX_LITERALS];
+        String[][] split = new String[clauses.size()][MAX_LITERALS];
         for (String clause : clauses) {
             split[clauses.indexOf(clause)] = clause.split("&");
         }
-
+              
         ArrayList<String> newClauses = new ArrayList<>();
-        for(int i = 0; i < split.length-1; i++) { // Goes through all clauses
-            for(int j = 0; j < split[i].length; j++){ // Goes through all literals of each clause
-                for(int o = 0; o < split[i+1].length; o++) { //
-                    if (split[i][j] != null && split[i+1][o] != null) {
-                        newClauses.add(split[i][j].concat("|").concat(split[i+1][o]));
-                    }
-                }
-            }
+        ArrayList<String> tmp = new ArrayList<String>();
+        ArrayList<ArrayList<String>> listOflist = new ArrayList<ArrayList<String>>();
+        
+        for(int i = 0; i < split.length; i++) {
+        	tmp.clear();
+        	for(int j = 0; j < split[i].length; j++) {
+        		tmp.add(split[i][j]);
+        	}
+        	listOflist.add(new ArrayList<String>(tmp));
         }
+        
+        
+        
+        ArrayList<String> result = new ArrayList<String>();
+        String current = "";
+        GeneratePermutations(listOflist, result, 0, current);
+        for(int i = 0; i < result.size(); i++) {
+        	String s = result.get(i).substring(0, result.get(i).length() - 1);
+        	result.set(i, s);
+        }
+        System.out.println("DNF to CNF Result: " + result);
 
         String negatedThesisCNF = "";
-        for(String s : newClauses){
+        for(String s : result){
             negatedThesisCNF = negatedThesisCNF.concat("(").concat(s).concat(")&");
         }
         negatedThesisCNF = negatedThesisCNF.substring(0, negatedThesisCNF.length() - 1);
 
         return negatedThesisCNF;
+    }
+
+    void GeneratePermutations(ArrayList<ArrayList<String>> Lists, ArrayList<String> result, int depth, String current)
+    {
+        if(depth == Lists.size())
+        {
+           result.add(current);
+           return;
+         }
+
+        for(int i = 0; i < Lists.get(depth).size(); ++i)
+        {
+            GeneratePermutations(Lists, result, depth + 1, current + Lists.get(depth).get(i).concat("|"));
+        }
     }
     
     public void testPL() {
