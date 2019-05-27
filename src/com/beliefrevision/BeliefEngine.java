@@ -121,44 +121,6 @@ public class BeliefEngine {
         return resArr;
     }
 
-    public String removeOr(StringBuilder res) {
-        String temp  = "";
-        if(res.charAt(0) == '|') {
-            res.setCharAt(0, ' ');
-        }
-
-        if(res.charAt(res.length()-1) == '|') {
-            res.setCharAt(res.length()-1, ' ');
-        }
-        temp = res.toString();
-
-        temp = temp.replaceAll(" ", "");
-        temp = temp.replaceAll("\\|\\|", "|");
-
-        return temp;
-    }
-
-
-    public String removeDub(String stringWithDuplicates) {
-        char[] characters = stringWithDuplicates.toCharArray();
-        boolean[] found = new boolean[256];
-        StringBuilder sb = new StringBuilder();
-        System.out.println("String with duplicates : " + stringWithDuplicates);
-        for (char c : characters) {
-            if(c == '|'){
-                sb.append(c);
-                continue;
-            }
-            if (!found[c]) {
-                found[c] = true;
-                sb.append(c);
-            }
-        }
-        System.out.println("String after duplicates removed : " + sb.toString());
-        return sb.toString();
-    }
-
-
     private boolean isCNF(String sentence) {
         Pattern pattern = Pattern.compile("([!]?[a-zA-Z](\\s?[|]\\s?([!]?[a-zA-Z]))+)|(([!]?[a-zA-Z]\\s?)|([(]([!]?[a-zA-Z](\\s?[|]\\s?[!]?[a-zA-Z])+)[)]\\s?))([&]\\s?(([!]?[a-zA-Z]\\s?)|([(]([!]?[a-zA-Z](\\s?[|]\\s?[!]?[a-zA-Z])+)[)]\\s?)))*");
         Matcher matcher = pattern.matcher(sentence);
