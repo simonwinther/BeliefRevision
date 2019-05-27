@@ -17,9 +17,10 @@ public class Main {
         BeliefEngine be = new BeliefEngine();
         Util util = new Util();
 
+
     	@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);
-
+        System.out.println(be.negateThesis(""));
     	for(;;) {
 	    	System.out.println("1. Add to belief base");
 	    	System.out.println("2. Check formula for consistency");
@@ -33,6 +34,7 @@ public class Main {
 	    	switch (choice) {
 			case 1:
 				be.addToBeliefBase(util.getRandomLine());
+				System.out.println(be.beliefBase.size());
 				break;
 				
 			case 2:
