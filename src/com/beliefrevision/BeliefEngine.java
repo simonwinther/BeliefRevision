@@ -1,6 +1,8 @@
 package com.beliefrevision;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -167,27 +169,44 @@ public class BeliefEngine {
                     }
 
                     if(found) {
+                        Set<String> hash_Set = new HashSet<>();
+                        StringBuilder res = new StringBuilder();
+
                         tmpc1.clause = tmpc1.clause.replace(obj1.symbol,"");
                         tmpc2.clause = tmpc2.clause.replace(obj2.symbol,"");
 
-                        StringBuilder res = new StringBuilder(tmpc1.clause + "|" + tmpc2.clause);
-                        String result = "";
-
-                        if(res.charAt(0) == '|') {
-                            res.setCharAt(0, ' ');
+                        for(int i = 0; i < tmpc1.literals.size(); i++) {
+                            if(tmpc1.literals.get(i).symbol == obj1.symbol) {
+                                tmpc1.literals.remove(i);
+                            }
                         }
 
-                        if(res.charAt(res.length()-1) == '|') {
-                            res.setCharAt(res.length()-1, ' ');
+                        for(int i = 0; i < tmpc2.literals.size(); i++) {
+                            if(tmpc2.literals.get(i).symbol == obj2.symbol) {
+                                tmpc2.literals.remove(i);
+                            }
                         }
-                        result =  res.toString();
 
-                        result = result.replaceAll(" ", "");
-                        result = result.replaceAll("\\|\\|", "|");
+                        for (Literal l1 : tmpc1.literals) {
+                            hash_Set.add(l1.symbol);
+                        }
+                        for (Literal l2 : tmpc2.literals) {
+                            hash_Set.add(l2.symbol);
+                        }
 
-                        System.out.println("result " + result);
+                        int counter = hash_Set.size();
 
-                        resArr.add(new Clause(result));
+                        for(String s : hash_Set){
+                            System.out.println("s "+ s);
+                            res.append(s);
+                            if(counter > 1) {
+                                res.append("|");
+                            }
+                            counter--;
+                        }
+
+                        System.out.println("Sum " +res.toString());
+                        resArr.add(new Clause(res.toString()));
                         found = false;
                         tmpc1 = new Clause(c1);
                         tmpc2 = new Clause(c2);

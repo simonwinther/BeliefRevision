@@ -38,6 +38,9 @@ public class Main {
 				break;
 				
 			case 2:
+				Clause tmp1 = new Clause("s");
+				Clause tmp2 = new Clause("!s");
+				be.PLResolve(tmp1, tmp2);
 				break;
 				
 			case 3:
