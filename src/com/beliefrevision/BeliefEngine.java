@@ -6,6 +6,8 @@ import java.util.regex.Pattern;
 
 
 public class BeliefEngine {
+    private static final int MAX_CLAUSES = 5;
+    private static final int MAX_LITERALS = 5;
     ArrayList<Object> beliefBase = new ArrayList<>();
     CNFSentence cnf;
 
@@ -28,7 +30,7 @@ public class BeliefEngine {
     }
 
     public String negateThesis(String sentence){
-        String test = "(A|C)&B";
+        String test = "(A|B)&!C";
 
         String moreDeMorgans;
         String negatedThesis = "";
@@ -102,7 +104,7 @@ public class BeliefEngine {
             clauses.add(tmpS);
         }
 
-        String[][] split = new String[5][5];
+        String[][] split = new String[MAX_CLAUSES][MAX_LITERALS];
         for (String clause : clauses) {
             split[clauses.indexOf(clause)] = clause.split("&");
         }
