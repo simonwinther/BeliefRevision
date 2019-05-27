@@ -266,61 +266,36 @@ public class BeliefEngine {
             clauses.add(tmpS);
         }
 
-        String[][] split = new String[MAX_CLAUSES][MAX_LITERALS];
+        String[][] split = new String[clauses.size()][MAX_LITERALS];
         for (String clause : clauses) {
             split[clauses.indexOf(clause)] = clause.split("&");
         }
-
+              
         ArrayList<String> newClauses = new ArrayList<>();
-        String tmp = "";
-
-        //for(int o = 0; o < 2; o++) {
-        for (int j = 0; j < split[0].length; j++) {
-            tmp = "";
-            tmp = tmp.concat(split[0][j]).concat("|");
-            for (int i = 1; i < split.length; i++) { // Goes through all clauses
-                if (split[i] == null) {
-                    continue;
-                }
-                // add split[0][j] + split[i][o]
-                //tmp = tmp.concat(split[0][j]);
-                if (split[i][j] != null) {
-                    tmp = tmp.concat(split[i][j]).concat("|");
-                }
-            }
-            newClauses.add(tmp);
+        ArrayList<String> tmp = new ArrayList<String>();
+        ArrayList<ArrayList<String>> listOflist = new ArrayList<ArrayList<String>>();
+        
+        for(int i = 0; i < split.length; i++) {
+        	tmp.clear();
+        	for(int j = 0; j < split[i].length; j++) {
+        		tmp.add(split[i][j]);
+        	}
+        	listOflist.add(new ArrayList<String>(tmp));
         }
-
-
-
-
-        //}
-/*
-            for(int j = 0; j < split[i].length; j++){ // Goes through all literals of each clause
-                for(int o = 0; o < split[i].length; o++) { //
-                    if(split[i][j] == split[i][o]){
-                        continue;
-                    }
-                    if(split[i][j] != null){
-                        tmp = tmp.concat(split[i][j]).concat("|");
-                    }
-
-                    if(split[i][o] != null){
-                        tmp = tmp.concat(split[i][o]).concat("|");
-                    }
-
-                    if (split[i][j] != null && split[i+1][o] != null) {
-                        newClauses.add(split[i][j].concat("|").concat(split[i+1][o]));
-                    }
-
-                }
-            }
-            tmp = tmp.substring(0, tmp.length() - 1);
-            clauses.add(tmp);
+        
+        
+        
+        ArrayList<String> result = new ArrayList<String>();
+        String current = "";
+        GeneratePermutations(listOflist, result, 0, current);
+        for(int i = 0; i < result.size(); i++) {
+        	String s = result.get(i).substring(0, result.get(i).length() - 1);
+        	result.set(i, s);
         }
-*/
+        System.out.println("DNF to CNF Result: " + result);
+
         String negatedThesisCNF = "";
-        for(String s : newClauses){
+        for(String s : result){
             negatedThesisCNF = negatedThesisCNF.concat("(").concat(s).concat(")&");
         }
         negatedThesisCNF = negatedThesisCNF.substring(0, negatedThesisCNF.length() - 1);
@@ -328,6 +303,20 @@ public class BeliefEngine {
         return negatedThesisCNF;
     }
 
+    void GeneratePermutations(ArrayList<ArrayList<String>> Lists, ArrayList<String> result, int depth, String current)
+    {
+        if(depth == Lists.size())
+        {
+           result.add(current);
+           return;
+         }
+
+        for(int i = 0; i < Lists.get(depth).size(); ++i)
+        {
+            GeneratePermutations(Lists, result, depth + 1, current + Lists.get(depth).get(i).concat("|"));
+        }
+    }
+    
     public void testPL() {
     	CNFSentence cnf = new CNFSentence("(!c|b)&a");
     	plResolution(beliefBase, cnf);
