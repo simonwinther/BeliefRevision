@@ -20,7 +20,11 @@ public class Main {
 
     	@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);
-        System.out.println(be.negateThesis(""));
+        //System.out.println();
+
+		CNFSentence cnf = new CNFSentence("!A&(B|C)&!D");
+		System.out.println(be.negateThesis(cnf));
+
     	for(;;) {
 	    	System.out.println("1. Add to belief base");
 	    	System.out.println("2. Check formula for consistency");
