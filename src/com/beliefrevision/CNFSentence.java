@@ -26,4 +26,8 @@ public class CNFSentence {
     public String getCNFSentence() {
     	return cnfSentence;
     }
+    
+    public ArrayList<Clause> getClauses(){
+    	return clauses;
+    }
 }
