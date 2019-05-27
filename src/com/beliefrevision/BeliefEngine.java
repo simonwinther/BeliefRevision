@@ -30,7 +30,7 @@ public class BeliefEngine {
     }
 
     /**************************ONLY WORKS FOR 1 OR 2 CLAUSES WITH '&' IN BETWEEN********************************/
-    public String negateThesis(CNFSentence sentence){
+    public CNFSentence negateThesis(CNFSentence sentence){
         String DNFForm;
         String negatedThesisCNF = "";
 
@@ -47,13 +47,13 @@ public class BeliefEngine {
             } else {
 
                 // DeMorgans
-                DNFForm = DeMorgan(sentence);
+                System.out.println("DNF form: "+(DNFForm = DeMorgan(sentence)));
 
                 // Distribution
                 negatedThesisCNF = distribution(DNFForm);
             }
         }
-        return negatedThesisCNF;
+        return new CNFSentence(negatedThesisCNF);
     }
 
     private String DeMorgan(CNFSentence sentence) {
@@ -98,9 +98,9 @@ public class BeliefEngine {
         }
 
         ArrayList<String> newClauses = new ArrayList<>();
-        for(int i = 0; i < split.length-1; i++) {
-            for(int j = 0; j < split[i].length; j++){
-                for(int o = 0; o < split[i+1].length; o++) {
+        for(int i = 0; i < split.length-1; i++) { // Goes through all clauses
+            for(int j = 0; j < split[i].length; j++){ // Goes through all literals of each clause
+                for(int o = 0; o < split[i+1].length; o++) { //
                     if (split[i][j] != null && split[i+1][o] != null) {
                         newClauses.add(split[i][j].concat("|").concat(split[i+1][o]));
                     }

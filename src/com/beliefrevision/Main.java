@@ -22,8 +22,8 @@ public class Main {
 		Scanner in = new Scanner(System.in);
         //System.out.println();
 
-		CNFSentence cnf = new CNFSentence("!A&(B|C)&!D");
-		System.out.println(be.negateThesis(cnf));
+		CNFSentence cnf = new CNFSentence("!A&(B|C)");
+		System.out.println(be.negateThesis(cnf).cnfSentence);
 
     	for(;;) {
 	    	System.out.println("1. Add to belief base");
