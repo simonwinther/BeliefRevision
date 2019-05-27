@@ -272,16 +272,53 @@ public class BeliefEngine {
         }
 
         ArrayList<String> newClauses = new ArrayList<>();
-        for(int i = 0; i < split.length-1; i++) { // Goes through all clauses
+        String tmp = "";
+
+        //for(int o = 0; o < 2; o++) {
+        for (int j = 0; j < split[0].length; j++) {
+            tmp = "";
+            tmp = tmp.concat(split[0][j]).concat("|");
+            for (int i = 1; i < split.length; i++) { // Goes through all clauses
+                if (split[i] == null) {
+                    continue;
+                }
+                // add split[0][j] + split[i][o]
+                //tmp = tmp.concat(split[0][j]);
+                if (split[i][j] != null) {
+                    tmp = tmp.concat(split[i][j]).concat("|");
+                }
+            }
+            newClauses.add(tmp);
+        }
+
+
+
+
+        //}
+/*
             for(int j = 0; j < split[i].length; j++){ // Goes through all literals of each clause
-                for(int o = 0; o < split[i+1].length; o++) { //
+                for(int o = 0; o < split[i].length; o++) { //
+                    if(split[i][j] == split[i][o]){
+                        continue;
+                    }
+                    if(split[i][j] != null){
+                        tmp = tmp.concat(split[i][j]).concat("|");
+                    }
+
+                    if(split[i][o] != null){
+                        tmp = tmp.concat(split[i][o]).concat("|");
+                    }
+
                     if (split[i][j] != null && split[i+1][o] != null) {
                         newClauses.add(split[i][j].concat("|").concat(split[i+1][o]));
                     }
+
                 }
             }
+            tmp = tmp.substring(0, tmp.length() - 1);
+            clauses.add(tmp);
         }
-
+*/
         String negatedThesisCNF = "";
         for(String s : newClauses){
             negatedThesisCNF = negatedThesisCNF.concat("(").concat(s).concat(")&");
