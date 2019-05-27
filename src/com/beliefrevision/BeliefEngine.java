@@ -1,13 +1,10 @@
 package com.beliefrevision;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-
 
 public class BeliefEngine {
     private static final int MAX_CLAUSES = 5;
@@ -44,7 +41,109 @@ public class BeliefEngine {
     	System.out.println("}");
     }
 
-    public ArrayList<Clause> PLResolve(Clause c1, Clause c2) {
+    //TODO: plResolution has not yet been tested
+	public boolean plResolution(ArrayList<Object> beliefBase, CNFSentence alpha) {
+		ArrayList<Clause> clauses = new ArrayList<Clause>();
+		ArrayList<Clause> _new = new ArrayList<Clause>();
+		ArrayList<Clause> resolvents = new ArrayList<Clause>();
+		
+		clauses.addAll(getClausesFromBB(beliefBase));
+		clauses.addAll(getClausesFromCNFSentence(negateThesis(alpha)));
+		
+		System.out.println("Negated heis: " + negateThesis(new CNFSentence("(!C|B)&A")).cnfSentence);
+		
+		//loop do
+		for(;;) {
+			
+			// for each pair of clauses ci, cj in clauses do
+			for (Clause ci: clauses) {
+				for (Clause cj: clauses) {
+					if (ci == cj) {
+						continue;
+					}
+					
+					// resolvents <- PL-Resolve(ci, cj)
+					// Add method: plResolve
+					resolvents.addAll(plResolve(ci, cj));
+					
+					// if resolvents contains the empty clause then return true
+					for (Clause tmp: resolvents) {
+						if (tmp.clause.isEmpty()) {
+							return true;
+						}
+					}
+					
+					// new <- new U resolvents
+					_new = unifyArrayLists(_new, resolvents);
+				}
+			}
+			
+			// if new is equivalent to clauses or clauses already has all existing clauses in new then return false
+			if(array1ContentMatchArray2(_new, clauses)) {
+				return false;
+			}
+			
+			// clauses <- clauses U new
+			clauses = unifyArrayLists(clauses, _new);
+		}
+	}
+
+	private ArrayList<Clause> unifyArrayLists(ArrayList<Clause> arr1, ArrayList<Clause> arr2) {
+		boolean clauseExist = false;
+		
+		for (Clause tmp: arr2) {
+			for (Clause tmp2: arr1) {
+				if(tmp.clause.equals(tmp2.clause)) {
+					clauseExist = true;
+					break;
+				}
+			}
+			if (!clauseExist) {
+				arr1.add(tmp);
+			}
+			clauseExist = false;
+		}
+		return arr1;
+	}
+	
+	public boolean array1ContentMatchArray2(ArrayList<Clause> arr1, ArrayList<Clause> arr2) {
+	    ArrayList<Clause> work = new ArrayList<Clause>(arr2);
+	    
+	    // as long as elements from arr1 can be removed from arr2, arr2 must contain the same elements as arr1.
+	    for (Clause element : arr1) {
+	        if (!work.remove(element)) {
+	            return false;
+	        }
+	    }
+	    return true;
+	}
+    
+    public CNFSentence getNegatedSentence(CNFSentence cnf) {
+    	return cnf;
+    }
+    
+    public ArrayList<Clause> getClausesFromCNFSentence(CNFSentence cnf){
+    	ArrayList<Clause> clauses = new ArrayList<Clause>();
+    		for(Clause tmp: cnf.getClauses()) {
+				clauses.add(tmp);
+			}
+    	return clauses;
+    }
+    
+    public ArrayList<Clause> getClausesFromBB(ArrayList<Object> beliefBase){
+    	ArrayList<Clause> clauses = new ArrayList<Clause>();
+    	for(Object obj: beliefBase) {
+    		if(obj.getClass() == CNFSentence.class) {
+    			cnf = (CNFSentence) obj;
+    			for(Clause tmp: cnf.getClauses()) {
+    				clauses.add(tmp);
+    			}
+    		}
+    	}
+    	return clauses;
+    }
+      
+    public ArrayList<Clause> plResolve(Clause c1, Clause c2) {
         ArrayList<Clause> resArr = new ArrayList<>();
 
         boolean found = false;
@@ -52,7 +151,6 @@ public class BeliefEngine {
         Clause tmpc1 = new Clause(c1);
         Clause tmpc2 = new Clause(c2);
 
-        ArrayList<Clause> newClauses = new ArrayList<Clause>();
         try {
             for (Literal obj1 : c1.literals) {
                 for (Literal obj2 : c2.literals) {
@@ -127,74 +225,62 @@ public class BeliefEngine {
         return matcher.matches();
     }
   
-    public String negateThesis(String sentence){
-        String test = "(A|B)&!C";
+    /**************************ONLY WORKS FOR 1 OR 2 CLAUSES WITH '&' IN BETWEEN********************************/
+    public CNFSentence negateThesis(CNFSentence sentence){
+        String DNFForm;
+        String negatedThesisCNF = "";
 
-        String moreDeMorgans;
-        String negatedThesis = "";
+        if(isCNF(sentence.cnfSentence)){
+            if(sentence.clauses.size() == 1) {
+                for (Literal l : sentence.clauses.get(0).literals) {
+                    if (l.symbol.charAt(0) == '!') {
+                        negatedThesisCNF = negatedThesisCNF.concat(Character.toString(l.symbol.charAt(1)).concat("&"));
+                    } else {
+                        negatedThesisCNF = negatedThesisCNF.concat("!").concat(l.symbol).concat("&");
+                    }
+                }
+                negatedThesisCNF = negatedThesisCNF.substring(0, negatedThesisCNF.length() - 1);
+            } else {
 
-        if(isCNF(test)){
+                // DeMorgans
+                System.out.println("DNF form: "+(DNFForm = DeMorgan(sentence)));
 
-            /* Not used for result
-            //Negate
-            StringBuilder tmp = new StringBuilder(test);
-            tmp.insert(0,"!(");
-            tmp.insert(tmp.length(),")");
-            */
-
-            //DeMorgans
-            moreDeMorgans = DeMorgan(test);
-
-            // distribution
-            negatedThesis = distribution(moreDeMorgans);
+                // Distribution
+                negatedThesisCNF = distribution(DNFForm);
+            }
         }
-        return negatedThesis;
+        return new CNFSentence(negatedThesisCNF);
     }
 
-    private String DeMorgan(String test) {
-        ArrayList<String> clauses = new ArrayList<>();
+    private String DeMorgan(CNFSentence sentence) {
         String negClause;
-        String moreDeMorgans = "";
+        String DNFForm= "";
 
-        String[] split = test.split("&");
-
-        for (String s : split){
-            //tmpSplit.insert(0,"!"); //for DeMorgans string (needs tmpSplit to be a StringBuilder
-            clauses.add(s);
-        }
-
-            /*
-            for (String clause : clauses) {
-                DeMorgans = DeMorgans.concat(clause).concat("|");
-            }
-            DeMorgans = DeMorgans.substring(0, DeMorgans.length() - 1);
-            */
-
-        //More DeMorgans and double negation
-        for (String clause : clauses) {
-            if (clause.charAt(0) != '(') {
-                if(clause.charAt(0) == '!') {
-                    moreDeMorgans = moreDeMorgans.concat(clause.substring(1)).concat("|");
+        //DeMorgans and double negation
+        for (Clause clause : sentence.clauses) {
+            if (clause.clause.charAt(0) != '(') {
+                if(clause.clause.charAt(0) == '!') {
+                    DNFForm = DNFForm.concat(clause.clause.substring(1)).concat("|");
                 } else {
-                    StringBuilder tmpSplit = new StringBuilder(clause);
+                    StringBuilder tmpSplit = new StringBuilder(clause.clause);
                     tmpSplit.insert(0, "!");
-                    moreDeMorgans = moreDeMorgans.concat(tmpSplit.toString()).concat("|");
+                    DNFForm = DNFForm.concat(tmpSplit.toString()).concat("|");
                 }
             } else {
-                negClause = clause.replaceAll("\\|", "&!");
+                negClause = clause.clause.replaceAll("\\|", "&!");
                 negClause = negClause.replaceAll("\\(", "(!");
                 negClause = negClause.replaceAll("!!", "");
-                moreDeMorgans = moreDeMorgans.concat(negClause).concat("|");
+                DNFForm = DNFForm.concat(negClause).concat("|");
             }
         }
-        moreDeMorgans = moreDeMorgans.substring(0, moreDeMorgans.length() - 1);
+        DNFForm = DNFForm.substring(0, DNFForm.length() - 1);
 
-        return moreDeMorgans;
+        return DNFForm;
     }
 
-    private String distribution(String moreDeMorgans) {
+    private String distribution(String DNFForm) {
         ArrayList<String> clauses = new ArrayList<>();
-        String[] split1 = moreDeMorgans.split("\\|");
+        String[] split1 = DNFForm.split("\\|");
         String tmpS;
         for (String s : split1) {
             tmpS = s.replaceAll("\\(", "");
@@ -207,26 +293,28 @@ public class BeliefEngine {
             split[clauses.indexOf(clause)] = clause.split("&");
         }
 
-
         ArrayList<String> newClauses = new ArrayList<>();
-        for(int i = 0; i < split.length-1; i++) {
-            for(int j = 0; j < split[i].length; j++){
-                for(int o = 0; o < split[i+1].length; o++) {
+        for(int i = 0; i < split.length-1; i++) { // Goes through all clauses
+            for(int j = 0; j < split[i].length; j++){ // Goes through all literals of each clause
+                for(int o = 0; o < split[i+1].length; o++) { //
                     if (split[i][j] != null && split[i+1][o] != null) {
-                        //System.out.println("Value of split[" + i + "][" + j + "] = " + split[i][j]);
-                        //System.out.println(split[i][j].concat("|").concat(split[i+1][o]));
                         newClauses.add(split[i][j].concat("|").concat(split[i+1][o]));
                     }
                 }
             }
         }
 
-        String negatedThesis = "";
+        String negatedThesisCNF = "";
         for(String s : newClauses){
-            negatedThesis = negatedThesis.concat("(").concat(s).concat(")&");
+            negatedThesisCNF = negatedThesisCNF.concat("(").concat(s).concat(")&");
         }
-        negatedThesis = negatedThesis.substring(0, negatedThesis.length() - 1);
+        negatedThesisCNF = negatedThesisCNF.substring(0, negatedThesisCNF.length() - 1);
 
-        return negatedThesis;
+        return negatedThesisCNF;
+    }
+    
+    public void testPL() {
+    	CNFSentence cnf = new CNFSentence("(!c|b)&a");
+    	plResolution(beliefBase, cnf);
     }
 }

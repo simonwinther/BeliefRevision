@@ -12,4 +12,8 @@ public class Literal {
     public Literal(String symbol) {
         this.symbol = symbol;
     }
+    
+    public String getSymbol() {
+    	return symbol;
+    }
 }

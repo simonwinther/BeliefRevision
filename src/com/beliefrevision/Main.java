@@ -20,12 +20,12 @@ public class Main {
 
     	@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);
-        System.out.println(be.negateThesis(""));
     	for(;;) {
 	    	System.out.println("1. Add to belief base");
 	    	System.out.println("2. Check formula for consistency");
 	    	System.out.println("3. Show belief base");
-	    	System.out.println("4. Quit");
+	    	System.out.println("4. Test resolution");
+	    	System.out.println("5. Quit");
 
 	    	//Read input for choice
 	    	int choice = in.nextInt();
@@ -41,13 +41,17 @@ public class Main {
 				Clause tmp1 = new Clause("s");
 				Clause tmp2 = new Clause("!s");
 				be.PLResolve(tmp1, tmp2);
-
 				break;
+				
 			case 3:
 				be.printBeliefBase();
 				break;
 	
 			case 4:
+				be.testPL();
+				break;
+				
+			case 5:
 				System.out.println("Belief engine shutdown");
 				System.exit(0);
 				break;

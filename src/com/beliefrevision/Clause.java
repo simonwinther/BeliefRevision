@@ -27,4 +27,9 @@ public class Clause {
             System.out.println("Literal: " + a);
         }
     }
+    
+    public ArrayList<Literal> getLiterals(){
+    	return literals;
+    }
+        
 }
