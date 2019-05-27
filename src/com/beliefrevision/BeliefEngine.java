@@ -28,24 +28,19 @@ public class BeliefEngine {
     }
 
     public String negateThesis(String sentence){
-        String test = "(A|!B)&(!C|D)";
+        String test = "(A|C)&B";
 
-        String moreDeMorgans = "";
+        String moreDeMorgans;
         String negatedThesis = "";
-
-        /*
-        !((A|!B)&!C)
-        !(A|!B)|C
-        (!A&B)|C
-        (!A|C)&(B|C)
-         */
 
         if(isCNF(test)){
 
+            /* Not used for result
             //Negate
             StringBuilder tmp = new StringBuilder(test);
             tmp.insert(0,"!(");
             tmp.insert(tmp.length(),")");
+            */
 
             //DeMorgans
             moreDeMorgans = DeMorgan(test);
@@ -119,16 +114,18 @@ public class BeliefEngine {
                 for(int o = 0; o < split[i+1].length; o++) {
                     if (split[i][j] != null && split[i+1][o] != null) {
                         //System.out.println("Value of split[" + i + "][" + j + "] = " + split[i][j]);
-                        System.out.println(split[i][j].concat("|").concat(split[i+1][o]));
+                        //System.out.println(split[i][j].concat("|").concat(split[i+1][o]));
                         newClauses.add(split[i][j].concat("|").concat(split[i+1][o]));
                     }
                 }
             }
         }
 
-        //TODO: set up the new clauses correctly and add symbols
-
         String negatedThesis = "";
+        for(String s : newClauses){
+            negatedThesis = negatedThesis.concat("(").concat(s).concat(")&");
+        }
+        negatedThesis = negatedThesis.substring(0, negatedThesis.length() - 1);
 
         return negatedThesis;
     }
