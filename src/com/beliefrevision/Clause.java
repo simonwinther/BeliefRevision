@@ -24,7 +24,7 @@ public class Clause {
         for (String a : arrOfStr) {
             Literal literal = new Literal(a);
             literals.add(literal);
-            System.out.println("Literal: " + a);
+//            System.out.println("Literal: " + a);
         }
     }
     
