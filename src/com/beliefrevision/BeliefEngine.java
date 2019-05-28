@@ -41,7 +41,6 @@ public class BeliefEngine {
     	System.out.println("}");
     }
 
-    //TODO: plResolution has not yet been tested
 	public boolean plResolution(ArrayList<Object> beliefBase, CNFSentence alpha) {
 		ArrayList<Clause> clauses = new ArrayList<Clause>();
 		ArrayList<Clause> _new = new ArrayList<Clause>();
@@ -49,8 +48,6 @@ public class BeliefEngine {
 
 		clauses.addAll(getClausesFromBB(beliefBase));
 		clauses.addAll(getClausesFromCNFSentence(negateThesis(alpha)));
-
-		System.out.println("Negated heis: " + negateThesis(alpha).cnfSentence);
 
 		//loop do
 		for(;;) {
@@ -85,7 +82,7 @@ public class BeliefEngine {
 
 			// clauses <- clauses U new
 			clauses = unifyArrayLists(clauses, _new);
-			
+
 			_new.clear();
 		}
 	}
@@ -114,7 +111,6 @@ public class BeliefEngine {
 	    // as long as elements from arr1 can be removed from arr2, arr2 must contain the same elements as arr1.
 	    for (Clause element1 : arr1) {
 	    	for (Clause element2 : work) {
-	    		System.out.println("is " + element1.clause + " : " + element2.clause + " \tequal: " + element1.clause.equals(element2.clause));
 	    		if(element1.clause.equals(element2.clause)) {
 	    			isElementSubset = true;
 	    		}
@@ -214,8 +210,9 @@ public class BeliefEngine {
                             counter--;
                         }
 
-//                        System.out.println("Sum " +res.toString());
-                        resArr.add(new Clause(res.toString()));
+                        Clause tmp = new Clause(res.toString());
+                        tmp = checkForTautology(tmp);
+                        resArr.add(tmp);
                         found = false;
                         tmpc1 = new Clause(c1);
                         tmpc2 = new Clause(c2);
@@ -320,7 +317,6 @@ public class BeliefEngine {
         	String s = result.get(i).substring(0, result.get(i).length() - 1);
         	result.set(i, s);
         }
-        System.out.println("DNF to CNF Result: " + result);
 
         String negatedThesisCNF = "";
         for(String s : result){
@@ -349,4 +345,39 @@ public class BeliefEngine {
     	CNFSentence cnf = new CNFSentence("p|q|!r");
     	System.out.println("resolution: " + plResolution(beliefBase, cnf));
     }
+
+    public void testPL2() {
+		CNFSentence cnf = new CNFSentence("!a");
+		System.out.println("resolution: " + plResolution(beliefBase, cnf));
+	}
+
+    private Clause checkForTautology(Clause c){
+
+    	for (Literal l1: c.literals){
+    		for (Literal l2: c.literals){
+    			if (l1.equals(l2)){
+    				continue;
+				}
+				if( l1.symbol.charAt(0) == '!' && l1.symbol.charAt(1) == l2.symbol.charAt(0)){
+					c.literals.remove(l1);
+					c.literals.remove(l2);
+				} else if (l2.symbol.charAt(0) == '!' && l1.symbol.charAt(0) == l2.symbol.charAt(1)){
+					c.literals.remove(l1);
+					c.literals.remove(l2);
+				}
+			}
+		}
+
+		int counter = c.literals.size();
+		StringBuilder res = new StringBuilder();
+		for(Literal l: c.literals){
+			res.append(l.symbol);
+			if(counter > 1) {
+				res.append("|");
+			}
+			counter--;
+		}
+
+    	return new Clause(res.toString());
+	}
 }

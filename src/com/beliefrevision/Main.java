@@ -14,9 +14,7 @@ public class Main {
 
         BeliefEngine be = new BeliefEngine();
         Util util = new Util();
-
-        System.out.println(be.negateThesis(new CNFSentence("!A&!D&(!E|F)")).cnfSentence);
-
+        
     	@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);
     	for(;;) {
@@ -32,8 +30,18 @@ public class Main {
 
 	    	switch (choice) {
 			case 1:
-				be.addToBeliefBase(util.getRandomLine());
-				System.out.println(be.beliefBase.size());
+				System.out.println("Input sentence in CNF from:");
+				String input = in.nextLine();
+				CNFSentence cnf = new CNFSentence(input);
+				if(be.beliefBase.isEmpty()) {
+					System.out.println("Added \"" + input + "\" to the Belief base");
+					be.addToBeliefBase(input);
+				} else if(be.plResolution(be.beliefBase,cnf)) {
+					System.out.println("Added " + input + " to the Belief base");
+					be.addToBeliefBase(input);
+				} else {
+					System.out.println("Could not add sentence to belief base");
+				}
 				break;
 				
 			case 2:
@@ -55,6 +63,10 @@ public class Main {
 				System.exit(0);
 				break;
 
+			case 6:
+				be.addToBeliefBase("a");
+				be.testPL2();
+				break;
 			default:
 				break;
 			}
