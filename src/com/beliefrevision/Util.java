@@ -31,9 +31,9 @@ public class Util {
     }
 
     public String getNextLine() {
-        counter++;
+        
         String tmp = cnfSentences.get(counter);
-
+        counter++;
         if(counter == cnfSentences.size()){
             counter = 0;
         }

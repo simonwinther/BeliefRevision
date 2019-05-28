@@ -19,7 +19,7 @@ public class CNFSentence {
             a = a.replaceAll("[()]", "");
             Clause clause = new Clause(a);
             clauses.add(clause);
-            System.out.println("Clause: " + a);
+//            System.out.println("Clause: " + a);
         }
     }
     

@@ -50,7 +50,7 @@ public class BeliefEngine {
 		clauses.addAll(getClausesFromBB(beliefBase));
 		clauses.addAll(getClausesFromCNFSentence(negateThesis(alpha)));
 
-		System.out.println("Negated heis: " + negateThesis(new CNFSentence("(!C|B)&A")).cnfSentence);
+		System.out.println("Negated heis: " + negateThesis(alpha).cnfSentence);
 
 		//loop do
 		for(;;) {
@@ -85,6 +85,8 @@ public class BeliefEngine {
 
 			// clauses <- clauses U new
 			clauses = unifyArrayLists(clauses, _new);
+			
+			_new.clear();
 		}
 	}
 
@@ -108,12 +110,19 @@ public class BeliefEngine {
 
 	public boolean array1ContentMatchArray2(ArrayList<Clause> arr1, ArrayList<Clause> arr2) {
 	    ArrayList<Clause> work = new ArrayList<Clause>(arr2);
-
+	    boolean isElementSubset = false;
 	    // as long as elements from arr1 can be removed from arr2, arr2 must contain the same elements as arr1.
-	    for (Clause element : arr1) {
-	        if (!work.remove(element)) {
-	            return false;
-	        }
+	    for (Clause element1 : arr1) {
+	    	for (Clause element2 : work) {
+	    		System.out.println("is " + element1.clause + " : " + element2.clause + " \tequal: " + element1.clause.equals(element2.clause));
+	    		if(element1.clause.equals(element2.clause)) {
+	    			isElementSubset = true;
+	    		}
+	    	}
+	    	if(isElementSubset == false) {
+	    		return false;
+	    	}
+	    	isElementSubset = false;
 	    }
 	    return true;
 	}
@@ -156,14 +165,14 @@ public class BeliefEngine {
                 for (Literal obj2 : c2.literals) {
                     if(obj1.symbol.charAt(0) == '!') {
                         if(obj1.symbol.charAt(1) == obj2.symbol.charAt(0)) {
-                            System.out.println("obj1 " + obj1.symbol);
-                            System.out.println("obj2 " + obj2.symbol);
+//                            System.out.println("obj1 " + obj1.symbol);
+//                            System.out.println("obj2 " + obj2.symbol);
                             found = true;
                         }
                     } else if (obj2.symbol.charAt(0) == '!') {
                         if(obj2.symbol.charAt(1) == obj1.symbol.charAt(0)) {
-                            System.out.println("obj1 " + obj1.symbol);
-                            System.out.println("obj2 " + obj2.symbol);
+//                            System.out.println("obj1 " + obj1.symbol);
+//                            System.out.println("obj2 " + obj2.symbol);
                             found = true;
                         }
                     }
@@ -197,7 +206,7 @@ public class BeliefEngine {
                         int counter = hash_Set.size();
 
                         for(String s : hash_Set){
-                            System.out.println("s "+ s);
+//                            System.out.println("s "+ s);
                             res.append(s);
                             if(counter > 1) {
                                 res.append("|");
@@ -205,7 +214,7 @@ public class BeliefEngine {
                             counter--;
                         }
 
-                        System.out.println("Sum " +res.toString());
+//                        System.out.println("Sum " +res.toString());
                         resArr.add(new Clause(res.toString()));
                         found = false;
                         tmpc1 = new Clause(c1);
@@ -337,7 +346,7 @@ public class BeliefEngine {
     }
     
     public void testPL() {
-    	CNFSentence cnf = new CNFSentence("(!c|b)&a");
-    	plResolution(beliefBase, cnf);
+    	CNFSentence cnf = new CNFSentence("p|q|!r");
+    	System.out.println("resolution: " + plResolution(beliefBase, cnf));
     }
 }

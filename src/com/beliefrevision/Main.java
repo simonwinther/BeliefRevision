@@ -6,8 +6,6 @@ import java.util.regex.Pattern;
 
 public class Main {
 
-
-
     public static void main(String[] args) {
     	menu();
     }
@@ -41,7 +39,7 @@ public class Main {
 			case 2:
 				Clause tmp1 = new Clause("s");
 				Clause tmp2 = new Clause("!s");
-				be.PLResolve(tmp1, tmp2);
+				be.plResolve(tmp1, tmp2);
 				break;
 				
 			case 3:
