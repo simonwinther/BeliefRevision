@@ -349,4 +349,34 @@ public class BeliefEngine {
     	CNFSentence cnf = new CNFSentence("p|q|!r");
     	System.out.println("resolution: " + plResolution(beliefBase, cnf));
     }
+
+    private Clause checkForTautoly(Clause c){
+
+    	for (Literal l1: c.literals){
+    		for (Literal l2: c.literals){
+    			if (l1.equals(l2)){
+    				continue;
+				}
+				if( l1.symbol.charAt(0) == '!' && l1.symbol.charAt(1) == l2.symbol.charAt(0)){
+					c.literals.remove(l1);
+					c.literals.remove(l2);
+				} else if (l2.symbol.charAt(0) == '!' && l1.symbol.charAt(0) == l2.symbol.charAt(1)){
+					c.literals.remove(l1);
+					c.literals.remove(l2);
+				}
+			}
+		}
+
+		int counter = c.literals.size();
+		StringBuilder res = new StringBuilder();
+		for(Literal l: c.literals){
+			res.append(l.symbol);
+			if(counter > 1) {
+				res.append("|");
+			}
+			counter--;
+		}
+
+    	return new Clause(res.toString());
+	}
 }
