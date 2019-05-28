@@ -206,7 +206,10 @@ public class BeliefEngine {
                         }
 
                         System.out.println("Sum " +res.toString());
-                        resArr.add(new Clause(res.toString()));
+
+                        Clause tmp = new Clause(res.toString());
+                        tmp = checkForTautology(tmp);
+                        resArr.add(tmp);
                         found = false;
                         tmpc1 = new Clause(c1);
                         tmpc2 = new Clause(c2);
@@ -341,7 +344,7 @@ public class BeliefEngine {
     	plResolution(beliefBase, cnf);
     }
 
-    private Clause checkForTautoly(Clause c){
+    private Clause checkForTautology(Clause c){
 
     	for (Literal l1: c.literals){
     		for (Literal l2: c.literals){
